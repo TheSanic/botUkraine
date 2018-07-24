@@ -1,1 +1,1 @@
-worker: python botUkraine.py
+worker: python Ukraine.py
