@@ -4,6 +4,7 @@ from discord.ext import commands
 from discord import Embed
 from os import environ
 import asyncio
+from random import randrange
 
 # Переменные(Variables)
 
@@ -13,7 +14,8 @@ Client = discord.Client()
 bot_prefix = "!"
 client = commands.Bot(command_prefix=bot_prefix)
 help_menu = ("```Так здраствет Україна!\n\nСписок команд:\n!remove [2-100] - Удалить данное количество сообщений\n" 
-            "!online - Показать онлайн сервера\n!help - вывести это сообщение```")
+            "!online - Показать онлайн сервера\n!choice [1, 2, ..] - Выбрать между несколькими элементами\n"
+            "!help - Вывести это сообщение```")
 
 # Главная часть(main)
 
@@ -31,6 +33,12 @@ async def on_member_join(member):
     await client.replace_roles(member, role)
 
 
+async def choice(message, choices):
+    choicesArr = choices.split(",")
+    chosen = choicesArr[randrange(len(choicesArr))]
+    await client.send_message(message.channel, "{0}, я выбираю **{1}**".format(message.author.mention, chosen))
+
+
 @client.event
 async def on_message(message):
     if client.user == message.author:
@@ -42,6 +50,9 @@ async def on_message(message):
         await remove(message, num)
     elif message.content == (bot_prefix + "help"):
         await client.send_message(message.channel, help_menu)
+    elif message.content.find(bot_prefix + "choice") != -1:
+    	choices = message.content.replace("!choice ", "")
+    	await choice(message, choices)
 
 
 async def online(ctx):
